@@ -2,15 +2,30 @@ package io.github.kongeor.flowers;
 
 import io.github.kongeor.flowers.domain.Flower;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Api {
 
-    public static List<Flower> getAllFlowers() {
-        Flower f1 = new Flower(1L, "Aglaonima", "Prasina fylla");
-	Flower f2 = new Flower(2L, "Spathifyllo", "Koftera fylla");
+    private static AtomicLong counter = new AtomicLong();
 
-	return Arrays.asList(f1, f2);
+    private static List<Flower> flowers = new ArrayList<>();
+
+    static {
+	Flower f1 = new Flower(counter.incrementAndGet(), "Aglaonima", "Prasina fylla");
+	Flower f2 = new Flower(counter.incrementAndGet(), "Spathifyllo", "Koftera fylla");
+	flowers.add(f1);
+	flowers.add(f2);
+    }
+
+    public static List<Flower> getAllFlowers() {
+        return flowers;
+    }
+
+    public static Flower createFlower(Flower flower) {
+        flower.setId(counter.incrementAndGet());
+        flowers.add(flower);
+        return flower;
     }
 }

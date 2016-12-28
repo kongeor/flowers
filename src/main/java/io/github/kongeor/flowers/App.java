@@ -1,8 +1,10 @@
 package io.github.kongeor.flowers;
 
 import com.google.gson.Gson;
+import io.github.kongeor.flowers.domain.Flower;
 
 import static spark.Spark.get;
+import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
 public class App {
@@ -12,6 +14,11 @@ public class App {
     public static void main(String[] args) {
 	setupStaticFiles();
         get("/api/flowers", (req, res) -> Api.getAllFlowers(), gson::toJson);
+	post("/api/flowers", (req, res) -> Api.createFlower(parseJson(req.body(), Flower.class)), gson::toJson);
+    }
+
+    public static <T> T parseJson(String payload, Class<T> clazz) {
+        return gson.fromJson(payload, clazz);
     }
 
     public static void setupStaticFiles() {
