@@ -3,17 +3,23 @@ package io.github.kongeor.flowers;
 import io.github.kongeor.flowers.domain.Flower;
 import org.codejargon.fluentjdbc.api.FluentJdbc;
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
+import org.codejargon.fluentjdbc.api.mapper.ObjectMappers;
 import org.codejargon.fluentjdbc.api.query.Query;
 import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGPoolingDataSource;
 
 import javax.sql.DataSource;
 
+import java.util.Collections;
+import java.util.List;
+
 public class Db {
 
     private static DataSource dataSource;
 
     private static Query query;
+
+    private static ObjectMappers objectMappers;
 
     static {
 	PGPoolingDataSource source = new PGPoolingDataSource();
@@ -32,6 +38,11 @@ public class Db {
 	    .build();
 
 	query = fluentJdbc.query();
+
+	objectMappers = ObjectMappers.builder()
+//	    .extractors(Collections.singletonMap(Flower.class, rs -> ))
+	    .build();
+	// rs -> new Flower(rs.getLong("ID"), rs.getString("NAME"), rs.getString("DESCRIPTION")
     }
 
     public static void migrate() {
@@ -51,6 +62,12 @@ public class Db {
 	return query
 	    .select("insert into flowers (name, description) values(?, ?) returning *")
 	    .params(flower.getName(), flower.getDescription())
-	    .singleResult(rs -> new Flower(rs.getLong("ID"), rs.getString("NAME"), rs.getString("DESCRIPTION")));
+	    .singleResult(objectMappers.forClass(Flower.class));
+    }
+
+    public static List<Flower> findAllFlowers() {
+	return query
+	    .select("select * from flowers")
+	    .listResult(objectMappers.forClass(Flower.class));
     }
 }

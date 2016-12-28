@@ -2,7 +2,6 @@ package io.github.kongeor.flowers;
 
 import com.google.gson.Gson;
 import io.github.kongeor.flowers.domain.Flower;
-import io.github.kongeor.flowers.services.UserService;
 
 import static spark.Spark.*;
 
@@ -14,7 +13,7 @@ public class App {
         Db.migrate();
 //        UserService.register("admin", "admin", "admin@example.com"); // in migration
 	setupStaticFiles();
-        get("/api/flowers", (req, res) -> Api.getAllFlowers(), gson::toJson);
+        get("/api/flowers", (req, res) -> Db.findAllFlowers(), gson::toJson);
 	post("/api/flowers", (req, res) -> Db.insertFlower(parseJson(req.body(), Flower.class)), gson::toJson);
 
 
