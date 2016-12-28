@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 import io.github.kongeor.flowers.domain.Flower;
 import io.github.kongeor.flowers.services.UserService;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.Spark.staticFiles;
+import static spark.Spark.*;
 
 public class App {
 
@@ -17,7 +15,12 @@ public class App {
 //        UserService.register("admin", "admin", "admin@example.com"); // in migration
 	setupStaticFiles();
         get("/api/flowers", (req, res) -> Api.getAllFlowers(), gson::toJson);
-	post("/api/flowers", (req, res) -> Api.createFlower(parseJson(req.body(), Flower.class)), gson::toJson);
+	post("/api/flowers", (req, res) -> Db.insertFlower(parseJson(req.body(), Flower.class)), gson::toJson);
+
+
+	exception(Exception.class, (e, req, res) -> {
+	    e.printStackTrace();
+	});
     }
 
     public static <T> T parseJson(String payload, Class<T> clazz) {

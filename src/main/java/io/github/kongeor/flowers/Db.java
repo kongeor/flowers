@@ -1,5 +1,6 @@
 package io.github.kongeor.flowers;
 
+import io.github.kongeor.flowers.domain.Flower;
 import org.codejargon.fluentjdbc.api.FluentJdbc;
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
 import org.codejargon.fluentjdbc.api.query.Query;
@@ -44,5 +45,12 @@ public class Db {
 	    .update("insert into users (username, password, email) values(?, ?, ?)")
 	    .params(username, password, email)
 	    .run();
+    }
+
+    public static Flower insertFlower(Flower flower) {
+	return query
+	    .select("insert into flowers (name, description) values(?, ?) returning *")
+	    .params(flower.getName(), flower.getDescription())
+	    .singleResult(rs -> new Flower(rs.getLong("ID"), rs.getString("NAME"), rs.getString("DESCRIPTION")));
     }
 }

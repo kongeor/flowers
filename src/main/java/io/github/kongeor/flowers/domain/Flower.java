@@ -22,4 +22,9 @@ public class Flower {
 	this.name = name;
 	this.description = description;
     }
+
+    @Override
+    public String toString() {
+	return "Flower{" + "id=" + id + ", name='" + name + '\'' + ", description='" + description + '\'' + '}';
+    }
 }
