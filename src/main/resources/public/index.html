@@ -11,6 +11,20 @@
 <body>
     <div id="app"></div>
 
+    <script type="text/x-template" id="create-flower-template">
+        <form v-on:submit.prevent="onSubmit">
+            <div class="row">
+                <label for="create-flower-name">Name</label>
+                <input v-model="name" type="text" class="u-full-width" id="create-flower-name">
+
+                <label for="create-flower-description">Description</label>
+                <textarea v-model="description" class="u-full-width" id="create-flower-description"></textarea>
+
+                <input class="button-primary" type="submit" value="Submit">
+            </div>
+        </form>
+    </script>
+
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="app.js"></script>
