@@ -1,12 +1,13 @@
+var data =
+{
+  flowers: []
+}
+
 var flower =
 {
   name: "",
   description: ""
 };
-
-Vue.component('heading', {
-  template: '<h1>Flowers</h1>'
-});
 
 Vue.component('create-flower', {
   template: '#create-flower-template',
@@ -46,10 +47,44 @@ Vue.component('flower-list', {
   template: '<div><flower v-for="flower in flowers" v-bind:flower="flower"></flower></div>'
 });
 
+
+// --------------------
+// Top Level Components
+
+var FlowerList = {
+  data: function() {
+    return data;
+  },
+  template: '<flower-list v-bind:flowers="flowers">'
+}
+
+var AddFlower = {
+  template: '<create-flower v-on:created="flowerCreated"/>',
+  methods: {
+    flowerCreated: function(flower) {
+      data.flowers.push(flower);
+      router.push("/");
+    }
+  }
+}
+
+var About = { template: '<div>Flower watering management app</div>' }
+
+var routes = [
+  { path: '/', component: FlowerList },
+  { path: '/add-flower', component: AddFlower },
+  { path: '/about', component: About }
+]
+
+var router = new VueRouter({
+  routes: routes
+});
+
 var app = new Vue({
+  router: router,
   el: '#app',
-  data: {
-    flowers: []
+  data: function() {
+    return data;
   },
   created: function() {
     var that = this;
@@ -60,10 +95,5 @@ var app = new Vue({
         console.log('fail: ' + error);
       });
   },
-  template: '<div class="container"><heading /><create-flower v-on:created="flowerCreated" /><flower-list v-bind:flowers="flowers"></flower-list></div>',
-  methods: {
-    flowerCreated: function(flower) {
-        this.flowers.push(flower);
-    }
-  }
+  template: '#main-container',
 });

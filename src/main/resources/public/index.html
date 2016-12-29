@@ -25,7 +25,20 @@
         </form>
     </script>
 
+    <script type="text/x-template" id="main-container">
+      <div class="container">
+        <h1>Flowers</h1>
+        <p>
+          <router-link to="/">Home</router-link>
+          <router-link to="/add-flower">Add Flower</router-link>
+          <router-link to="/about">About</router-link>
+        </p>
+        <router-view></router-view>
+      </div>
+    </script>
+
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@2.1.1/dist/vue-router.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="app.js"></script>
 </body>
