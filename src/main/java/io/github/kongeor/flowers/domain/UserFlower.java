@@ -2,6 +2,9 @@ package io.github.kongeor.flowers.domain;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.Date;
+import java.util.List;
+
 public class UserFlower {
 
     @Expose
@@ -23,6 +26,11 @@ public class UserFlower {
     private String notes;
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+
+    @Expose
+    private List<Date> waterings;
+    public List<Date> getWaterings() { return waterings; }
+    public void setWaterings(List<Date> waterings) { this.waterings = waterings; }
 
     @Override
     public String toString() {

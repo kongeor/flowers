@@ -54,6 +54,8 @@ public class App {
 
 	exception(Exception.class, (e, req, res) -> {
 	    e.printStackTrace();
+	    res.status(500);
+	    res.body("boom!");
 	});
     }
 

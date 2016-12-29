@@ -18,5 +18,6 @@ create table user_flowers (
   user_id integer references users(id) on delete cascade,
   flower_id integer references flowers(id) on delete cascade,
   notes text,
+  waterings timestamp[],
   primary key(id, user_id, flower_id)
 );

@@ -5,6 +5,7 @@ import io.github.kongeor.flowers.domain.User;
 import io.github.kongeor.flowers.domain.UserFlower;
 import org.codejargon.fluentjdbc.api.FluentJdbc;
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
+import org.codejargon.fluentjdbc.api.mapper.ObjectMapperRsExtractor;
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers;
 import org.codejargon.fluentjdbc.api.query.Query;
 import org.flywaydb.core.Flyway;
@@ -12,8 +13,9 @@ import org.postgresql.ds.PGPoolingDataSource;
 
 import javax.sql.DataSource;
 
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Db {
 
@@ -41,10 +43,28 @@ public class Db {
 
 	query = fluentJdbc.query();
 
+	Map<Class, ObjectMapperRsExtractor> extractors = new HashMap<>();
+
+	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	// TODO works only for dates
+	extractors.put(List.class, (resultSet, index) -> {
+	    String[] tokens = resultSet.getString(index).replaceAll("\"|\\{|}", "").split(",");
+	    List<Date> dates = new ArrayList<>();
+	    for (String token : tokens) {
+	        String date = token.split("\\.")[0]; // ignore millis
+		try {
+		    dates.add(simpleDateFormat.parse(date));
+		} catch (ParseException e) {
+		    throw new IllegalStateException(e);
+		}
+	    }
+	    return dates;
+	});
+
 	objectMappers = ObjectMappers.builder()
-//	    .extractors(Collections.singletonMap(Flower.class, rs -> ))
+	    .extractors(extractors)
 	    .build();
-	// rs -> new Flower(rs.getLong("ID"), rs.getString("NAME"), rs.getString("DESCRIPTION")
     }
 
     public static void migrate() {
