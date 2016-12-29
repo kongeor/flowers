@@ -17,6 +17,6 @@ create table user_flowers (
   id bigserial,
   user_id integer references users(id) on delete cascade,
   flower_id integer references flowers(id) on delete cascade,
-  notext text,
+  notes text,
   primary key(id, user_id, flower_id)
 );

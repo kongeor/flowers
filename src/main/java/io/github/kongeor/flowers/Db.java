@@ -2,6 +2,7 @@ package io.github.kongeor.flowers;
 
 import io.github.kongeor.flowers.domain.Flower;
 import io.github.kongeor.flowers.domain.User;
+import io.github.kongeor.flowers.domain.UserFlower;
 import org.codejargon.fluentjdbc.api.FluentJdbc;
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers;
@@ -84,5 +85,12 @@ public class Db {
 	    .select("select * from users where id = ?")
 	    .params(id)
 	    .firstResult(objectMappers.forClass(User.class));
+    }
+
+    public static List<UserFlower> findUserFlowers(Long userId) {
+	return query
+	    .select("select * from user_flowers where user_id = ?")
+	    .params(userId)
+	    .listResult(objectMappers.forClass(UserFlower.class));
     }
 }

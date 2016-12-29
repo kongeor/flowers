@@ -25,6 +25,8 @@ public class App {
         get("/api/flowers", (req, res) -> Db.findAllFlowers(), gson::toJson);
 	post("/api/flowers", (req, res) -> Db.insertFlower(parseJson(req.body(), Flower.class)), gson::toJson);
 
+	get("/api/users/:id/flowers", (req, res) -> Db.findUserFlowers(Long.parseLong(req.params(":id"))), gson::toJson); // TODO chek
+
 	post("/api/login", (req, res) -> {
 	    User user = UserService.login(parseJson(req.body(), User.class));
 	    req.session().attribute(UID, user.getId());
