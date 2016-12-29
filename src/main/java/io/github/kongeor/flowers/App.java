@@ -27,6 +27,13 @@ public class App {
 
 	get("/api/users/:id/flowers", (req, res) -> Db.findUserFlowers(Long.parseLong(req.params(":id"))), gson::toJson); // TODO chek
 
+	post("/api/user/flowers/:id/water", (req, res) -> {
+	    Db.waterUserFlower(Long.parseLong(req.params(":id"))); // TODO check
+	    res.status(204);
+	    res.body(null);
+	    return null;
+	}, gson::toJson);
+
 	post("/api/login", (req, res) -> {
 	    User user = UserService.login(parseJson(req.body(), User.class));
 	    req.session().attribute(UID, user.getId());

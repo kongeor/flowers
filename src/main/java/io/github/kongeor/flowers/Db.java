@@ -113,4 +113,11 @@ public class Db {
 	    .params(userId)
 	    .listResult(objectMappers.forClass(UserFlower.class));
     }
+
+    public static void waterUserFlower(Long id) {
+	query
+	    .update("update user_flowers set waterings = waterings || now()::timestamp where id = ?")
+	    .params(id)
+	    .run();
+    }
 }
