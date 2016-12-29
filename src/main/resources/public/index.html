@@ -11,6 +11,20 @@
 <body>
     <div id="app"></div>
 
+    <script type="text/x-template" id="login-template">
+        <form v-on:submit.prevent="onSubmit">
+            <div class="row">
+                <label for="login-username">Name</label>
+                <input v-model="username" type="text" class="u-full-width" id="login-username">
+
+                <label for="login-password">Password</label>
+                <input v-model="password" type="password" class="u-full-width" id="login-password">
+
+                <input class="button-primary" type="submit" value="Login">
+            </div>
+        </form>
+    </script>
+
     <script type="text/x-template" id="create-flower-template">
         <form v-on:submit.prevent="onSubmit">
             <div class="row">
@@ -32,6 +46,13 @@
           <router-link to="/">Home</router-link>
           <router-link to="/add-flower">Add Flower</router-link>
           <router-link to="/about">About</router-link>
+          <span style='float: right' >
+            <span v-if="user">
+              Welcome {{ user.username }},
+              <router-link to="/logout">Logout</router-link>
+            </span>
+            <router-link v-else="user" to="/login">Login</router-link>
+          </span>
         </p>
         <router-view></router-view>
       </div>

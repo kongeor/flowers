@@ -1,6 +1,7 @@
 package io.github.kongeor.flowers;
 
 import io.github.kongeor.flowers.domain.Flower;
+import io.github.kongeor.flowers.domain.User;
 import org.codejargon.fluentjdbc.api.FluentJdbc;
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers;
@@ -10,8 +11,8 @@ import org.postgresql.ds.PGPoolingDataSource;
 
 import javax.sql.DataSource;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class Db {
 
@@ -69,5 +70,19 @@ public class Db {
 	return query
 	    .select("select * from flowers")
 	    .listResult(objectMappers.forClass(Flower.class));
+    }
+
+    public static Optional<User> findUserByNameOrEmail(String value) {
+	return query
+	    .select("select * from users where username = ? or email = ?")
+	    .params(value, value)
+	    .firstResult(objectMappers.forClass(User.class));
+    }
+
+    public static Optional<User> findUserById(Long id) {
+	return query
+	    .select("select * from users where id = ?")
+	    .params(id)
+	    .firstResult(objectMappers.forClass(User.class));
     }
 }

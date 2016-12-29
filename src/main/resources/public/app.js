@@ -1,6 +1,7 @@
 var data =
 {
-  flowers: []
+  flowers: [],
+  user: null
 }
 
 var flower =
@@ -8,6 +9,37 @@ var flower =
   name: "",
   description: ""
 };
+
+var user =
+{
+  username: "",
+  password: ""
+}
+
+Vue.component('login-form', {
+  template: '#login-template',
+  data: function() {
+    return user;
+  },
+  methods: {
+    onSubmit: function() {
+      var that = this;
+      if (!this.username && !this.password) {
+        alert('username and password are required!')
+      } else {
+        axios.post('/api/login', user)
+        .then(function (response) {
+          user.username = "";
+          user.password = "";
+          that.$emit('loggedIn', response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      }
+    }
+  }
+});
 
 Vue.component('create-flower', {
   template: '#create-flower-template',
@@ -51,6 +83,31 @@ Vue.component('flower-list', {
 // --------------------
 // Top Level Components
 
+var Logout = {
+  template: '<p>loading...</p>', // hack!
+  beforeCreate: function() {
+    axios.post('/api/logout')
+      .then(function (response) {
+        data.user = null;
+        router.push("/");
+      }).catch(function (error) {
+        data.user = null;
+        router.push("/");
+      });
+  }
+}
+
+var LoginForm = {
+  template: '<login-form v-on:loggedIn="userLoggedIn"/>',
+  methods: {
+    userLoggedIn: function(user) {
+      console.log(user);
+      data.user = user;
+      router.push("/");
+    }
+  }
+}
+
 var FlowerList = {
   data: function() {
     return data;
@@ -73,7 +130,9 @@ var About = { template: '<div>Flower watering management app</div>' }
 var routes = [
   { path: '/', component: FlowerList },
   { path: '/add-flower', component: AddFlower },
-  { path: '/about', component: About }
+  { path: '/about', component: About },
+  { path: '/login', component: LoginForm },
+  { path: '/logout', component: Logout }
 ]
 
 var router = new VueRouter({
@@ -86,11 +145,18 @@ var app = new Vue({
   data: function() {
     return data;
   },
-  created: function() {
+  beforeCreate: function() {
     var that = this;
     axios.get('/api/flowers')
       .then(function (response) {
         that.flowers = response.data;
+      }).catch(function (error) {
+        console.log('fail: ' + error);
+      });
+
+    axios.get('/api/session')
+      .then(function (response) {
+        data.user = response.data;
       }).catch(function (error) {
         console.log('fail: ' + error);
       });
