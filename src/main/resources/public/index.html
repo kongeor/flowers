@@ -39,11 +39,23 @@
         </form>
     </script>
 
+    <script type="text/x-template" id="add-my-flower-template">
+        <form v-on:submit.prevent="onSubmit">
+            <div class="row">
+                <label for="add-flower-notes">Notes</label>
+                <textarea v-model="notes" type="text" class="u-full-width" id="add-flower-notes"></textarea>
+
+                <input class="button-primary" type="submit" value="Submit">
+            </div>
+        </form>
+    </script>
+
     <script type="text/x-template" id="main-container">
       <div class="container">
         <h1>Flowers</h1>
         <p>
           <router-link to="/">Home</router-link>
+          <router-link to="/flowers">Flowers</router-link>
           <router-link to="/add-flower">Add Flower</router-link>
           <router-link to="/about">About</router-link>
           <span style='float: right' >

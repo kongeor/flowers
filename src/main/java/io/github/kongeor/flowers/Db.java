@@ -49,14 +49,17 @@ public class Db {
 
 	// TODO works only for dates
 	extractors.put(List.class, (resultSet, index) -> {
-	    String[] tokens = resultSet.getString(index).replaceAll("\"|\\{|}", "").split(",");
+	    String value = resultSet.getString(index);
 	    List<Date> dates = new ArrayList<>();
-	    for (String token : tokens) {
-	        String date = token.split("\\.")[0]; // ignore millis
-		try {
-		    dates.add(simpleDateFormat.parse(date));
-		} catch (ParseException e) {
-		    throw new IllegalStateException(e);
+	    if (value != null) {
+		String[] tokens = value.replaceAll("\"|\\{|}", "").split(",");
+		for (String token : tokens) {
+		    String date = token.split("\\.")[0]; // ignore millis
+		    try {
+			dates.add(simpleDateFormat.parse(date));
+		    } catch (ParseException e) {
+			throw new IllegalStateException(e);
+		    }
 		}
 	    }
 	    return dates;
@@ -112,6 +115,13 @@ public class Db {
 	    .select("select * from user_flowers where user_id = ?")
 	    .params(userId)
 	    .listResult(objectMappers.forClass(UserFlower.class));
+    }
+
+    public static Flower registerUserFlower(UserFlower userFlower) {
+	return query
+	    .select("insert into user_flowers (user_id, flower_id, notes) values(?, ?, ?) returning *")
+	    .params(userFlower.getUserId(), userFlower.getFlowerId(), userFlower.getNotes())
+	    .singleResult(objectMappers.forClass(Flower.class));
     }
 
     public static void waterUserFlower(Long id) {

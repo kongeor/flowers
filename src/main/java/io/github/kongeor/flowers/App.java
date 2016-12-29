@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.kongeor.flowers.domain.Flower;
 import io.github.kongeor.flowers.domain.User;
+import io.github.kongeor.flowers.domain.UserFlower;
 import io.github.kongeor.flowers.exceptions.AuthException;
 import io.github.kongeor.flowers.exceptions.NotFound;
 import io.github.kongeor.flowers.services.UserService;
@@ -26,6 +27,18 @@ public class App {
 	post("/api/flowers", (req, res) -> Db.insertFlower(parseJson(req.body(), Flower.class)), gson::toJson);
 
 	get("/api/users/:id/flowers", (req, res) -> Db.findUserFlowers(Long.parseLong(req.params(":id"))), gson::toJson); // TODO chek
+
+	get("/api/user/flowers", (req, res) -> {
+	    Long userId = req.session().<Long>attribute(UID); // TODO security
+	    return Db.findUserFlowers(userId);
+	}, gson::toJson);
+
+	post("/api/user/flowers", (req, res) -> {
+	    Long userId = req.session().<Long>attribute(UID); // TODO security
+	    UserFlower userFlower = parseJson(req.body(), UserFlower.class);
+	    userFlower.setUserId(userId); // TODO bad practice
+	    return Db.registerUserFlower(userFlower);
+	}, gson::toJson);
 
 	post("/api/user/flowers/:id/water", (req, res) -> {
 	    Db.waterUserFlower(Long.parseLong(req.params(":id"))); // TODO check
