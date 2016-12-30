@@ -1,5 +1,9 @@
 apply plugin: 'java'
 
+task wrapper(type: Wrapper) {
+    gradleVersion = "3.2.1";
+}
+
 repositories {
     jcenter()
 }
@@ -15,3 +19,16 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 }
+
+jar {
+    from {
+        (configurations.runtime).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    manifest {
+        attributes("Main-Class": "io.github.kongeor.flowers.App" )
+    }
+}
+
+task stage(dependsOn: ['clean', 'jar'])
