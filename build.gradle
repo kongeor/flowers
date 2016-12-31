@@ -35,3 +35,7 @@ jar {
 }
 
 task stage(dependsOn: ['clean', 'jar'])
+
+tasks.withType(Test) {
+    systemProperty 'db.url', System.getProperty('db.url')
+}

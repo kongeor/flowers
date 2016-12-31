@@ -33,7 +33,7 @@ public class Db {
     static {
         URI dbUri = null;
         try {
-            dbUri = new URI(System.getProperty("db.url", DEFAULT_DB_URL));
+            dbUri = new URI(System.getProperty("db.url"));
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }

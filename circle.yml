@@ -3,3 +3,7 @@ deployment:
     branch: master
     heroku:
       appname: louloudio
+
+test:
+  override:
+    - ./gradlew test -Ddb.url=$DATABASE_URL
