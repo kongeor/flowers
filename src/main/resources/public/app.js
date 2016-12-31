@@ -116,7 +116,20 @@ Vue.component('flower-list', {
 
 Vue.component('my-flower', {
   props: ['flower'],
-  template: '<div><h3>{{ flower.id }}</h3><p>{{ flower.notes }}</p><hr></div>',
+  template: '<div><h3>{{ flower.id }}</h3><p>{{ flower.notes }}</p>' +
+    '<button class="button-primary" v-on:click.prevent="water" >Water</button><hr></div>',
+  methods: {
+    water: function() {
+      var that = this;
+      axios.post('/api/user/flowers/' + that.flower.id + '/water', {})
+      .then(function (response) {
+        console.log('water success');
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
+  }
 });
 
 Vue.component('my-flower-list', {
