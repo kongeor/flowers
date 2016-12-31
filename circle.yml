@@ -7,3 +7,7 @@ deployment:
 test:
   override:
     - ./gradlew test -Ddb.url=$DATABASE_URL
+
+machine:
+  environment:
+    DATABASE_URL: postgres://ubuntu:ubuntu@127.0.0.1:5432/circle_test
