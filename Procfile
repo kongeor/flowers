@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -Dserver.port=$PORT -Ddb.url=$DATABASE_URL -jar build/libs/flowers.jar
+web: java $JAVA_OPTS -Dserver.port=$PORT -Ddb.url=$DATABASE_URL -jar build/libs/flowers-1.0.jar

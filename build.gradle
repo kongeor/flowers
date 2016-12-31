@@ -21,6 +21,8 @@ dependencies {
 }
 
 jar {
+    baseName = 'flowers'
+    version = '1.0'
     from {
         (configurations.runtime).collect {
             it.isDirectory() ? it : zipTree(it)
