@@ -13,11 +13,16 @@ import org.postgresql.ds.PGPoolingDataSource;
 
 import javax.sql.DataSource;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Db {
+
+    // heroku format
+    private static final String DEFAULT_DB_URL = "postgres://flowers:flowers@localhost:5432/flowers";
 
     private static DataSource dataSource;
 
@@ -26,48 +31,57 @@ public class Db {
     private static ObjectMappers objectMappers;
 
     static {
-	PGPoolingDataSource source = new PGPoolingDataSource();
-	source.setDataSourceName("Flowers Data Source");
-	source.setServerName("localhost");
-	source.setDatabaseName("flowers");
-	source.setPortNumber(5432);
-	source.setUser("flowers");
-	source.setPassword("flowers");
-	source.setMaxConnections(10);
+        URI dbUri = null;
+        try {
+            dbUri = new URI(System.getProperty("db.url", DEFAULT_DB_URL));
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
 
-	dataSource = source;
+        String username = dbUri.getUserInfo().split(":")[0];
+        String password = dbUri.getUserInfo().split(":")[1];
+        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
 
-	FluentJdbc fluentJdbc = new FluentJdbcBuilder()
-	    .connectionProvider(dataSource)
-	    .build();
+        PGPoolingDataSource source = new PGPoolingDataSource();
+        source.setDataSourceName("Flowers Data Source");
+        source.setUrl(dbUrl);
+        source.setUser(username);
+        source.setPassword(password);
+        source.setMaxConnections(10);
 
-	query = fluentJdbc.query();
+        dataSource = source;
 
-	Map<Class, ObjectMapperRsExtractor> extractors = new HashMap<>();
+        FluentJdbc fluentJdbc = new FluentJdbcBuilder()
+                .connectionProvider(dataSource)
+                .build();
 
-	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        query = fluentJdbc.query();
 
-	// TODO works only for dates
-	extractors.put(List.class, (resultSet, index) -> {
-	    String value = resultSet.getString(index);
-	    List<Date> dates = new ArrayList<>();
-	    if (value != null) {
-		String[] tokens = value.replaceAll("\"|\\{|}", "").split(",");
-		for (String token : tokens) {
-		    String date = token.split("\\.")[0]; // ignore millis
-		    try {
-			dates.add(simpleDateFormat.parse(date));
-		    } catch (ParseException e) {
-			throw new IllegalStateException(e);
-		    }
-		}
-	    }
-	    return dates;
-	});
+        Map<Class, ObjectMapperRsExtractor> extractors = new HashMap<>();
 
-	objectMappers = ObjectMappers.builder()
-	    .extractors(extractors)
-	    .build();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        // TODO works only for dates
+        extractors.put(List.class, (resultSet, index) -> {
+            String value = resultSet.getString(index);
+            List<Date> dates = new ArrayList<>();
+            if (value != null) {
+                String[] tokens = value.replaceAll("\"|\\{|}", "").split(",");
+                for (String token : tokens) {
+                    String date = token.split("\\.")[0]; // ignore millis
+                    try {
+                        dates.add(simpleDateFormat.parse(date));
+                    } catch (ParseException e) {
+                        throw new IllegalStateException(e);
+                    }
+                }
+            }
+            return dates;
+        });
+
+        objectMappers = ObjectMappers.builder()
+                .extractors(extractors)
+                .build();
     }
 
     public static void migrate() {
